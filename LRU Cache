@@ -1,0 +1,101 @@
+class LRUCache:
+    
+    class Dll:
+        
+        def __init__(self,key,value):
+            self.value=value
+            self.key=key
+            self.next=None
+            self.prev=None
+            
+    
+    def insert_node(self,key,value):
+        new_node=self.Dll(key,value)
+                
+        self.hash_map[key]=new_node
+        
+        current_first=self.head.next
+
+        self.head.next=new_node
+        new_node.prev=self.head
+        
+        new_node.next=current_first
+        current_first.prev=new_node
+    
+    def update(self,address):
+        
+        
+        previous_node=address.prev
+        next_node=address.next
+        
+        previous_node.next=next_node
+        next_node.prev=previous_node
+        
+            
+        current_first=self.head.next
+        
+        self.head.next=address
+        address.prev=self.head
+        
+        address.next=current_first
+        current_first.prev=address
+    
+
+    # @param capacity, an integer
+    def __init__(self, capacity):
+        
+        self.capacity=capacity
+        
+        self.hash_map={}
+        
+        self.head=self.Dll(float('inf'),float('inf'))
+        self.tail=self.Dll(float('inf'),float('inf'))
+        
+        self.head.next=self.tail
+        self.tail.prev=self.head
+
+    # @return an integer
+    def get(self, key):
+    
+        
+        if self.capacity==0 or self.hash_map.get(key)==None:
+            return -1
+        
+        else:
+            self.update(self.hash_map[key])
+            return self.hash_map[key].value
+
+    # @param key, an integer
+    # @param value, an integer
+    # @return nothing
+    def set(self, key, value):
+        
+        if self.capacity==0:
+            return
+        
+        if self.hash_map.get(key)!=None:
+            self.hash_map[key].value=value
+            self.update(self.hash_map[key])
+        
+        else:
+            if len(self.hash_map)<self.capacity:
+                
+                self.insert_node(key,value)
+                
+            
+            else:
+                
+                current_last=self.tail.prev
+                
+                second_last=current_last.prev
+                
+                second_last.next=self.tail
+                self.tail.prev=second_last
+                
+                del self.hash_map[current_last.key]
+                
+                self.insert_node(key,value)
+                
+                
+                
+                
